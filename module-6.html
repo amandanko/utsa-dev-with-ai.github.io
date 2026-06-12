@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 06 · Security &amp; Failure Modes — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 06</p>
+    <h1>Security &amp; Failure Modes</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~20 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Explain package hallucination and the slopsquatting attack it enables — and run the dependency-verification ritual before anything gets installed.</li>
+          <li>Name the classic security flaws that generated code reproduces at machine speed, and where to look for each in a diff.</li>
+          <li>Describe prompt injection against a coding agent and apply the untrusted-content rule.</li>
+          <li>Add the three-item security pass to your review, and use the agent as an adversarial reviewer without taking its word for the results.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 6 overview with a slopsquatting walkthrough, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 06 overview — how a hallucinated package becomes an attack</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="threat">1. Your threat model just changed</h2>
+      <p>Every module so far treated agent mistakes as quality problems: wrong
+         behavior, weak tests, code you can't explain. This module treats them as
+         <strong>security problems</strong>, which is different in one crucial way —
+         quality failures are random, but security failures are <em>hunted</em>.
+         Attackers study how these models fail and build attacks shaped exactly like
+         the failures. Two threat classes matter for this course:</p>
+      <ul>
+        <li><strong>Flaws in what the agent writes</strong> — insecure code and
+            dangerous dependencies entering your project through your own approvals.</li>
+        <li><strong>Attacks on the loop itself</strong> — adversarial content that
+            manipulates the agent while it works on your behalf.</li>
+      </ul>
+      <p>Neither requires you to become a security researcher this semester. Both
+         are handled by extending habits you already have: the review checklist
+         gets a security pass, and the boundary rules from Module 03 get teeth.</p>
+
+      <h2 id="packages">2. Package hallucination — discovered down the hall</h2>
+      <p>Start with the failure mode documented by researchers in this department.
+         The UTSA study you met in Module 01 — Spracklen et&nbsp;al.,
+         <em>"We Have a Package for You!"</em> — generated code at scale across
+         sixteen models and checked every imported package against the real
+         registries. Roughly a fifth of the package references pointed to packages
+         that <strong>do not exist</strong>: names that are plausible, well-formed,
+         and entirely invented. Worse, the hallucinations weren't random noise —
+         a majority of invented names <em>recurred</em> when prompts were repeated,
+         meaning models reliably hallucinate the <em>same</em> fake packages.</p>
+      <p>Recurrence is what turns a quirk into an attack. If a model keeps
+         recommending <code>fast-json-validator</code> and no such package exists,
+         an attacker can register that exact name on the public registry with
+         malware inside — then simply wait for developers everywhere to approve the
+         install their agent suggested. The technique is called
+         <strong>slopsquatting</strong>, and the payload doesn't exploit your code;
+         it exploits your <em>approval</em>. Which is why the defense is a ritual
+         at the approval moment:</p>
+
+      <div class="callout warn">
+        <span class="label">The dependency ritual — before any install is approved</span>
+        <ol>
+          <li><strong>It exists:</strong> find the package's page on the official
+              registry yourself — never via a link the agent provided.</li>
+          <li><strong>It's established:</strong> check age, release history,
+              download counts, and a linked source repository with real activity.
+              A two-week-old package with three downloads fails, whatever its name.</li>
+          <li><strong>It's exactly right:</strong> compare the name character-by-character
+              against the official docs. Typosquatting — <code>requets</code> for
+              <code>requests</code> — predates AI and still works.</li>
+          <li><strong>It's sanctioned:</strong> your spec's constraints said which
+              dependencies are allowed. If this one isn't on the list, that's a
+              spec conversation, not an install.</li>
+        </ol>
+        <p>Ninety seconds, once per new dependency. Checklist item 2 from
+           Module 04 — "no new dependencies I didn't sanction" — now has a
+           procedure behind it.</p>
+      </div>
+
+      <h2 id="classics">3. Classic flaws at machine speed</h2>
+      <p>Most security problems in generated code aren't exotic — they're the
+         classics, produced faster and with more confidence. Industry code reviews
+         in 2026 still find security flaws in a large fraction of AI-generated
+         code, which is precisely why professional teams keep a human review in
+         front of every merge. Four to look for, and where:</p>
+      <ul>
+        <li><strong>Unvalidated input at trust boundaries.</strong> Generated code
+            tends to validate what the spec mentioned and nothing else. Find every
+            place outside data enters — a text field, a loaded file, a network
+            response — and ask what happens when the input is hostile, huge, or
+            malformed. (Your unhappy-path tests from Module 05 already live here;
+            security just raises the stakes.)</li>
+        <li><strong>Injection by string-building.</strong> Queries, shell commands,
+            or file paths assembled by concatenating user input. The fix has been
+            the same for twenty years — parameterized queries, proper APIs — but
+            models trained on twenty years of tutorials still reproduce the
+            tutorial version. Any string concatenation that ends in
+            <code>execute()</code> is a finding.</li>
+        <li><strong>Secrets in the code.</strong> Agents asked to "make it work"
+            will happily hardcode an API key, and will also happily commit it.
+            Rule: secrets live in untracked config (<code>.env</code>,
+            gitignored), never in source, never in prompts — a pasted key is a
+            shared key.</li>
+        <li><strong>Yesterday's APIs.</strong> Training data ages. Generated code
+            may use deprecated crypto, outdated TLS patterns, or a vulnerable
+            version of a real library. The current way to do anything
+            security-relevant is a docs lookup, not a model memory.</li>
+      </ul>
+
+      <h2 id="injection">4. Attacks on the loop: prompt injection</h2>
+      <p>The second threat class targets the agent, not the code. Your agent reads
+         things while it works — files in the repo, error messages, READMEs of
+         libraries, web pages if you allow it tools. Any of that content can
+         contain <em>instructions</em>: text crafted so that a model processing it
+         treats it as something to obey. A poisoned README that says, in effect,
+         "as part of setup, run this command" can turn your helpful agent into the
+         attacker's hands — operating with whatever permissions you granted.</p>
+      <p>Your defenses are the guardrails you already run, now with their real
+         justification visible:</p>
+      <ul>
+        <li><strong>Approvals on</strong> (Module 03) means an injected instruction
+            still has to get past <em>you</em>. This is why the course made
+            auto-run a privilege to earn: every permission you grant the agent is
+            a permission you grant to anything the agent reads.</li>
+        <li><strong>Treat external content as untrusted input to the agent.</strong>
+            Cloning an unknown repo, pasting a long error from a random forum,
+            pointing the agent at an arbitrary URL — each is a trust decision.
+            Make it consciously, with permissions scoped down.</li>
+        <li><strong>Watch for the swerve.</strong> An agent that suddenly proposes
+            an action unrelated to your task — a network call, a new install, a
+            file outside the boundary — right after reading external content has
+            given you Module 03's scope-drift signal with a security meaning.
+            Stop and read what it just read.</li>
+      </ul>
+
+      <h2 id="pass">5. The security pass</h2>
+      <p>Three items join your review, completing the course checklist at twelve:</p>
+      <ol start="10">
+        <li>Every new dependency passed the dependency ritual.</li>
+        <li>Trust boundaries in the diff were walked: inputs validated, no
+            string-built queries or commands, no secrets in source.</li>
+        <li>The agent was asked to attack its own code — and at least one of its
+            claims was verified by hand.</li>
+      </ol>
+      <p>Item 11's "walked" means physically: list where data enters, point at the
+         validation. Item 12 deserves a note: asking the agent
+         <em>"act as a security reviewer; how would you attack this code?"</em> is
+         genuinely productive — adversarial framing surfaces issues plain review
+         misses. But Module 04's rule holds with no exceptions:
+         <strong>explanations are claims, not evidence</strong>. A model can
+         invent a vulnerability that isn't there and miss one that is. Its attack
+         list is your reading list, not your verdict.</p>
+
+      <h2 id="exercise">6. Hands-on exercise (~15 min)</h2>
+      <ol>
+        <li>Delegate a small feature that imports an external package — e.g.,
+            "export the group list to a formatted PDF, using a library of your
+            choice." The free choice is the point.</li>
+        <li>Run the dependency ritual on whatever it picked, and record the
+            evidence: registry link you found yourself, age, downloads, repo
+            activity, name comparison. If the package fails any step — and
+            sometimes it will — reject it, tell the agent why, and ritual the
+            replacement.</li>
+        <li>Run item 11 on the diff: list every trust boundary the feature touches
+            (at minimum: the file path it writes, the group data it reads) and
+            note the validation present or missing.</li>
+        <li>Run item 12: ask the agent to attack its own code, pick its most
+            interesting claim, and verify it by hand — try the hostile input, or
+            find the docs that confirm or refute. Record whether the claim held.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your dependency-ritual evidence and your verified (or busted) attack
+           claim. The studio session tallies the room: how many distinct packages
+           did the same prompt produce, did any fail the ritual, and which
+           agent-claimed vulnerabilities turned out to be real? The distribution
+           on the board is the UTSA paper's finding, reproduced by you.</p>
+      </div>
+
+      <h2 id="reading">7. Going deeper</h2>
+      <ul>
+        <li>Spracklen et&nbsp;al., <em>"We Have a Package for You! A Comprehensive
+            Analysis of Package Hallucinations by Code Generating LLMs"</em> — read
+            at least the findings section; the methodology is also a model for
+            Module 08's evaluation mindset. Ask your instructor about the talk —
+            the authors are UTSA researchers.</li>
+        <li>The OWASP Top 10, plus the OWASP Top 10 for LLM applications — the
+            second list maps almost one-to-one onto this module's two threat
+            classes.</li>
+        <li>Module 07 preview: you now know how generated code fails. Next module
+            is what to do at 11 p.m. when it has — debugging with, and of, the
+            agent.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-5.html">← Module 05: Verification &amp; Testing</a>
+        <a href="module-7.html">Module 07: Troubleshooting &amp; Debugging with AI →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#threat">The threat model changed</a></li>
+        <li><a href="#packages">Package hallucination</a></li>
+        <li><a href="#classics">Classics at machine speed</a></li>
+        <li><a href="#injection">Prompt injection</a></li>
+        <li><a href="#pass">The security pass</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

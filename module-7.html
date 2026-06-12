@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 07 · Troubleshooting &amp; Debugging with AI — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 07</p>
+    <h1>Troubleshooting &amp; Debugging with AI</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~20 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Write a bug report that makes an agent useful: expected vs. actual, minimal reproduction, exact evidence, and what's already ruled out.</li>
+          <li>Use the agent for hypothesis generation while keeping hypothesis <em>testing</em> for yourself — and refuse fixes for hypotheses nobody confirmed.</li>
+          <li>Run the two-attempt escalation ladder, and climb off it into classical debugging before the thrash loop starts.</li>
+          <li>Debug in the right blame order when the code was generated: spec first, code second, environment third, tool last.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 7 overview with a narrated debugging session, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 07 overview — a real bug, hunted on camera</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="moved">1. Debugging didn't go away — it moved</h2>
+      <p>It's 11 p.m., the demo is tomorrow, and the feature that worked on Tuesday
+         throws an exception nobody recognizes. This is the moment the whole course
+         has been preparing you for, because it's the moment vibe coding presents
+         its bill: a codebase you can't read is a codebase you can't fix. If you've
+         been running the Module 04–05 habits, you arrive with assets instead —
+         a suite that tells you <em>what</em> broke, review notes that tell you
+         what each piece was for, and a commit history where every agent
+         contribution is one clean diff.</p>
+      <p>The temptation at 11 p.m. has a specific shape: paste the stack trace,
+         type "fix it," accept the patch, repeat. Sometimes it even works. But it's
+         a slot machine — each pull costs a diff you didn't really review, and
+         three pulls in you have new code layered on broken code and no idea which
+         change did what. Module 03 named this <em>thrashing</em> and told you to
+         exit. This module is the full discipline of staying out of it.</p>
+
+      <h2 id="report">2. The bug report is a spec</h2>
+      <p>Everything Module 02 taught about specification applies double here,
+         because a debugging agent with a vague prompt doesn't just guess — it
+         guesses <em>confidently, with a patch attached</em>. A useful bug report
+         has four parts, and they're worth two minutes even at 11 p.m.:</p>
+      <ul>
+        <li><strong>Expected vs. actual</strong> — and "expected" comes from your
+            acceptance criteria, verbatim. "Typing <code>cs 34</code> should match
+            CS 3443; instead the list goes empty."</li>
+        <li><strong>Minimal reproduction</strong> — the smallest input and shortest
+            path that triggers it. Shrinking the repro is half the diagnosis, and
+            it's work you can co-do with the agent: "help me find the smallest
+            input that still fails."</li>
+        <li><strong>Exact evidence</strong> — the complete error text and stack
+            trace, pasted, not paraphrased. Models read stack traces well; they
+            read "it crashes somewhere in the filter thing" the way you'd expect.</li>
+        <li><strong>What's ruled out</strong> — "the suite passed before commit
+            <code>a3f1</code>; the repository returns the right list (verified by
+            test); the bug appears only when the query contains a space." Every
+            ruled-out fact prunes the agent's hypothesis tree before it grows.</li>
+      </ul>
+
+      <h2 id="hypotheses">3. Hypotheses are the agent's job; verification is yours</h2>
+      <p>Here's the division of labor that makes AI genuinely powerful at
+         debugging. Models are exceptional at <em>differential diagnosis</em> —
+         given a good report, they'll produce a ranked list of plausible causes in
+         seconds, including ones outside your experience. So ask for exactly that:
+         <em>"List the most likely causes, ranked, with how I could cheaply test
+         each one — don't write a fix yet."</em></p>
+      <p>That last clause is the discipline. The failure pattern to avoid is
+         accepting a patch for a hypothesis nobody confirmed. A fix that makes the
+         symptom disappear without a confirmed cause is the worst outcome in
+         debugging: <strong>the fix that works for the wrong reason</strong> —
+         the real bug is still there, now wearing camouflage, and it will be back
+         the week of the final. The loop you want instead:</p>
+      <ol>
+        <li>Agent proposes ranked hypotheses with a cheap discriminating test for each.</li>
+        <li><em>You</em> run the cheapest test — a print statement, a breakpoint,
+            one assertion — and observe.</li>
+        <li>Confirmed? Now request the fix, for that cause, and review it like any
+            diff (it's amazing how small fixes get when the cause is known).
+            Refuted? Feed the observation back; the new fact is worth ten retries.</li>
+      </ol>
+      <p>One mechanical rule keeps the whole thing sane:
+         <strong>one attempted fix, one commit</strong>. Never let the agent stack
+         a second fix on an unverified first. If two fixes fail, revert both — you
+         are demonstrably guessing, and the ladder below says what's next.</p>
+
+      <h2 id="ladder">4. The escalation ladder</h2>
+      <p>Module 03 gave you the thrashing signal; here's the procedure that
+         replaces it. Two assisted attempts, then the wheel:</p>
+      <ol>
+        <li><strong>Attempt 1:</strong> full bug report, hypothesis loop, one
+            verified fix. This resolves most bugs.</li>
+        <li><strong>Attempt 2:</strong> only with <em>new evidence</em> — a fact
+            attempt 1 produced. "Try again" is not an attempt; it's the same pull
+            of the same slot machine. If you have nothing new to add, you're
+            already at step 3.</li>
+        <li><strong>Take the wheel.</strong> Close the agent panel and reach for
+            the classical kit, which works exactly as well as it did before AI:
+            <ul>
+              <li><strong>The debugger.</strong> Breakpoint at the last place you
+                  <em>know</em> the data is right; step until it's wrong. The IDE
+                  debugger is still the highest-bandwidth instrument in
+                  this trade, and CS 3443 expects you fluent in it.</li>
+              <li><strong>Bisection.</strong> Your one-diff-per-task git history
+                  (Module 03) makes <code>git bisect</code> almost magical: a few
+                  checkouts and the guilty commit identifies itself.</li>
+              <li><strong>Rubber-ducking — with a twist.</strong> Explain the
+                  failing code line by line, out loud or in writing, to the agent.
+                  The explaining is what finds the bug; the agent is just a duck
+                  that occasionally asks a good question. If there's a line you
+                  can't explain, Module 04 already told you: that line is the
+                  homework, and tonight it's also the prime suspect.</li>
+            </ul>
+        </li>
+      </ol>
+      <p>The ladder isn't anti-AI — you can bring findings from step 3 back to the
+         agent for a final fix. It's anti-<em>thrash</em>: a hard stop that
+         converts "one more try" into evidence-gathering.</p>
+
+      <h2 id="blame">5. When the code was generated: blame in the right order</h2>
+      <p>Debugging code an agent wrote adds one diagnostic layer, and it goes
+         <em>first</em>:</p>
+      <ol>
+        <li><strong>The spec.</strong> Reread what you actually asked for. A
+            startling fraction of "bugs" in generated code are the model doing
+            precisely what you said and not what you meant — the silent decisions
+            from Module 02, surfacing late. If the spec was wrong, the fix is a
+            spec fix; patching the code leaves you maintaining a correct
+            implementation of the wrong thing.</li>
+        <li><strong>The code.</strong> Now hunt with the Module 04 smell list in
+            hand — silent defaults and swallowed exceptions are disproportionately
+            where generated bugs hide, because they're designed not to crash.
+            A bug with no stack trace is usually a <code>catch</code> block eating
+            one; your first move is often to make the code <em>louder</em>.</li>
+        <li><strong>The environment.</strong> Version mismatches, stale builds,
+            the dependency that resolved differently on your teammate's machine
+            (Module 06's territory). "Works on my machine" is an environment
+            hypothesis, and it's testable.</li>
+        <li><strong>The tool.</strong> Last, and rarely: the playbook's sharp-edges
+            section lists the current known quirks. Check it before deciding
+            you've found a new one — then log it there if you truly have, because
+            that's the tool layer doing its job.</li>
+      </ol>
+
+      <h2 id="exercise">6. Hands-on exercise (~20 min, in pairs)</h2>
+      <p>Sabotage night. You'll need a teammate and your merged project feature.</p>
+      <ol>
+        <li>Your partner introduces one subtle bug into your feature branch — a
+            flipped comparison, an off-by-one, a swallowed exception — commits it
+            among two innocent cosmetic commits, and tells you only the symptom.</li>
+        <li>Write the four-part bug report before touching the agent. Yes, all
+            four parts.</li>
+        <li>Run the ladder: hypothesis loop, one fix per commit, two-attempt
+            limit. If you hit step 3, use the debugger or
+            <code>git bisect</code> — with three commits, bisect will feel like
+            cheating. That's the lesson.</li>
+        <li>Record: your report, the hypotheses generated, the discriminating
+            test you ran, attempts used, and whether the wheel was needed. Then
+            swap roles.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your run record and your partner's bug. The studio session runs the
+           room's stats — attempts-to-fix, how often the spec was the real
+           culprit, which discriminating tests paid off — and then the instructor
+           debugs the session's nastiest surviving bug live, narrating the ladder.</p>
+      </div>
+
+      <h2 id="reading">7. Going deeper</h2>
+      <ul>
+        <li>David Agans, <em>Debugging: The 9 Indispensable Rules</em> — decades
+            old, fully compatible with agents, and "Quit Thinking and Look" is
+            this module's section 3 in four words.</li>
+        <li>Your IDE's debugger documentation — conditional breakpoints and watch
+            expressions repay the hour they take to learn, this week.</li>
+        <li>Module 08 preview: every skill so far assumed today's tools. The last
+            module is how to keep all of it when the tools are different by the
+            time you graduate — which they will be.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-6.html">← Module 06: Security &amp; Failure Modes</a>
+        <a href="module-8.html">Module 08: Keeping Up →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#moved">Debugging moved</a></li>
+        <li><a href="#report">The bug report is a spec</a></li>
+        <li><a href="#hypotheses">Hypotheses vs. verification</a></li>
+        <li><a href="#ladder">The escalation ladder</a></li>
+        <li><a href="#blame">Blame in the right order</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

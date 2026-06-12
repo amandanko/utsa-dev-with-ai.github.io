@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 05 · Verification &amp; Testing — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 05</p>
+    <h1>Verification &amp; Testing</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~25 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Translate acceptance criteria into named test cases, one observable behavior per test.</li>
+          <li>Review generated tests with the same skepticism as generated code — and name the four smells of a weak test.</li>
+          <li>Prove a test can fail before trusting that it passes (the red-first discipline).</li>
+          <li>Run the test-first delegation workflow: approve failing tests, then let the agent implement against them.</li>
+          <li>State the merge gate and the protected-tests rule, and explain why each exists.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 5 overview with a live red-first demonstration, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 05 overview — includes a live red-first demonstration</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="evidence">1. "It ran once" is a demo, not evidence</h2>
+      <p>Module 04 had you trace code by hand. That was the right way to learn to
+         read — and the wrong way to verify a project, because hand-tracing checks
+         one path, once, on the day you happened to be careful. Your project will
+         change every week for the rest of the semester, much of it written by an
+         agent, and every change can silently break what worked. Verification has to
+         be something that <em>re-runs</em>.</p>
+      <p>That's all a test suite is: your acceptance criteria, written down in a
+         form that executes. And in AI-assisted development it picks up a second
+         job. The suite is the <strong>contract between you and the agent</strong> —
+         the machine-checkable definition of done that survives between sessions
+         with a collaborator that remembers nothing. Your spec said what done looks
+         like; your tests are how anyone, human or agent, finds out whether we're
+         there.</p>
+
+      <h2 id="mapping">2. From criteria to tests: a straight line</h2>
+      <p>If you wrote Module 02's acceptance criteria honestly — concrete input,
+         observable result — turning them into tests is nearly mechanical. The
+         StudyBuddy search criteria become:</p>
+
+      <table class="simple">
+        <thead>
+          <tr><th>Acceptance criterion</th><th>Test</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Typing <code>cs 34</code> matches "CS 3443"</td>
+            <td><code>filter_matchesCourseCode_caseInsensitive()</code></td>
+          </tr>
+          <tr>
+            <td>Typing <code>algo</code> matches "Algorithms Anonymous"</td>
+            <td><code>filter_matchesPartialName()</code></td>
+          </tr>
+          <tr>
+            <td>Clearing the field restores the full list</td>
+            <td><code>filter_emptyQuery_returnsAllGroups()</code></td>
+          </tr>
+          <tr>
+            <td>Zero matches shows the no-results message</td>
+            <td><code>filter_noMatches_returnsEmptyList()</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Three conventions to adopt now: one behavior per test, so a failure names
+         the broken promise; test names that read as sentences, because the test
+         list <em>is</em> your spec's table of contents; and at least one test per
+         unhappy path your spec called out — plus one for the unhappy path it
+         didn't, which is where Module 04 taught you generated code is weakest.</p>
+
+      <h2 id="weak">3. Generated tests are code you didn't write</h2>
+      <p>Here's the recursion you've probably already spotted: the fastest way to
+         get this suite is to ask the agent — and a generated test is generated
+         code, owed the same review as everything in Module 04. Worse, weak tests
+         are more dangerous than weak code, because a weak test <em>certifies</em>
+         weak code. Four smells to check every generated test for:</p>
+      <ul>
+        <li><strong>The tautology.</strong> A test that cannot fail: asserting a
+            value against itself, testing that the mock returns what the mock was
+            told to return, or the literal <code>assertNotNull</code> on something
+            that's always constructed. It pads the count and verifies nothing.</li>
+        <li><strong>Happy-path bias.</strong> Six tests, all variations of the same
+            successful case, none touching empty, null, zero-match, or tied inputs.
+            Count your unhappy-path tests; if it's zero, the suite is decorative.</li>
+        <li><strong>Asserting the implementation.</strong> A test that checks
+            <em>how</em> ("the method calls <code>toLowerCase()</code>") instead of
+            <em>what</em> ("the match is case-insensitive"). These tests break when
+            the code is improved and pass when it's wrong in a new way — exactly
+            backwards.</li>
+        <li><strong>The echo.</strong> The subtlest one: an agent asked to write
+            tests for buggy code will often write tests that <em>enshrine the
+            bug</em>, because it derives expectations from the implementation in
+            front of it. The defense is to derive tests from the spec, not the
+            code — which is why the workflow in the next section puts tests first.</li>
+        </ul>
+
+      <div class="callout warn">
+        <span class="label">The red-first discipline</span>
+        <p>A test you've never seen fail proves nothing — it might be a tautology,
+           an echo, or simply not running. So: for each test that matters, make it
+           fail once. Comment out the fix, flip a comparison, return the wrong
+           value — any one-line sabotage — run the suite, watch it go red, undo.
+           Thirty seconds per test, and now <em>green means something</em>.</p>
+      </div>
+
+      <h2 id="workflow">4. The workflow: tests first, then implementation</h2>
+      <p>Putting the pieces in order gives you the strongest delegation pattern in
+         this course:</p>
+      <ol>
+        <li><strong>Delegate the tests first.</strong> Give the agent your spec's
+            acceptance criteria — not your implementation — and ask for failing
+            tests, one per criterion.</li>
+        <li><strong>Review the tests</strong> against the four smells. This is the
+            highest-leverage review you'll do: ten minutes here governs everything
+            built against them.</li>
+        <li><strong>Red-check</strong> the ones that matter.</li>
+        <li><strong>Then delegate the implementation</strong>, with the suite as the
+            finish line: "make these pass without modifying them."</li>
+        <li><strong>Verify green yourself.</strong> Run the suite on your machine.
+            The agent saying tests pass is a claim; your terminal is evidence —
+            the same hierarchy as Module 04.</li>
+      </ol>
+      <p>Two standing rules now join your conventions file:</p>
+      <ul>
+        <li><strong>The merge gate:</strong> nothing merges with a red suite, and
+            nothing merges that added behavior without adding a test. This is
+            checklist item 9, joining Module 04's eight.</li>
+        <li><strong>Tests are protected files.</strong> The agent never edits an
+            existing test to make it pass — that's Module 03's goal-corruption
+            signal, now codified. A test change is its own task, with its own
+            justification, reviewed on its own.</li>
+      </ul>
+
+      <h2 id="limits">5. What the suite can't see</h2>
+      <p>Honesty about limits keeps the tool sharp. Your unit suite won't catch a
+         JavaFX layout that's wrong on a small window, a confusing label, a
+         three-second freeze on a large file, or the security problems Module 06
+         covers — and 100% coverage of code you don't understand is still code you
+         don't understand. Keep a short manual checklist for the UI behaviors your
+         spec promised, run it before each demo, and treat the suite as necessary,
+         never sufficient. Verification is a portfolio; tests are its largest
+         holding.</p>
+
+      <h2 id="exercise">6. Hands-on exercise (~20 min)</h2>
+      <p>Work against the feature you merged in Module 04.</p>
+      <ol>
+        <li>Delegate test generation from your Module 02 acceptance criteria —
+            paste the criteria, not the code, and ask for one named test per
+            criterion plus one unhappy path of the agent's choosing.</li>
+        <li>Review against the four smells. Find at least one weakness — there
+            almost always is one — and strengthen it yourself: a real assertion, a
+            nastier input, a behavior instead of an implementation detail.</li>
+        <li>Red-check two tests by sabotaging the code, watching the failure, and
+            reverting. Save the red output.</li>
+        <li>Run the full suite yourself and merge through the gate: green suite,
+            review note updated with what you found in the tests.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your weakest generated test (before and after you strengthened it) and
+           your red-check output. The studio session plays "can this test fail?" —
+           the room inspects volunteered tests and votes before the sabotage run.
+           Being confidently wrong here, in public, for free, is the cheapest
+           testing lesson you'll ever get.</p>
+      </div>
+
+      <h2 id="reading">7. Going deeper</h2>
+      <ul>
+        <li>Your testing framework's docs on parameterized tests — the four search
+            criteria above collapse into one table-driven test, and agents write
+            these well when asked.</li>
+        <li>The classic test-smell catalogs (start with "test smells" in the
+            software-engineering literature) — written for human-authored tests,
+            newly relevant for generated ones.</li>
+        <li>Module 06 preview: the suite proves your code does what you meant.
+            It says nothing about whether a dependency the agent chose is even
+            real. That's next.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-4.html">← Module 04: Reading Code You Didn&#39;t Write</a>
+        <a href="module-6.html">Module 06: Security &amp; Failure Modes →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#evidence">Demos vs. evidence</a></li>
+        <li><a href="#mapping">Criteria to tests</a></li>
+        <li><a href="#weak">Weak generated tests</a></li>
+        <li><a href="#workflow">Tests-first workflow</a></li>
+        <li><a href="#limits">What tests can't see</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

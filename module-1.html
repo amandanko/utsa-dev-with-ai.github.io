@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 01 · The Landscape &amp; Your Stance — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 01</p>
+    <h1>The Landscape &amp; Your Stance</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~20 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Distinguish the three working modes of AI coding tools — inline assist, supervised agent, autonomous agent — and pick the right one for a given task.</li>
+          <li>Explain, with a concrete example, why "vibe coding" produces software you cannot defend.</li>
+          <li>State the course stance — <strong>you own every line you submit</strong> — and apply the CS 3443 disclosure policy to your own work.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 1 overview, about 6 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 01 overview</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~6 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="modes">1. Three working modes, not one tool</h2>
+      <p>When people say "AI coding tool," they're describing at least three different
+         working relationships. The product names will keep changing; the modes won't.</p>
+
+      <table class="simple">
+        <thead>
+          <tr><th>Mode</th><th>What it does</th><th>You are the…</th><th>Best for</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Inline assist</strong></td>
+            <td>Suggests the next lines as you type; answers questions in a chat panel.</td>
+            <td>Author</td>
+            <td>Code you understand well and could write yourself, faster.</td>
+          </tr>
+          <tr>
+            <td><strong>Supervised agent</strong></td>
+            <td>Plans and executes a multi-file task — edits, runs tests, iterates — while you watch and approve.</td>
+            <td>Reviewer &amp; director</td>
+            <td>Well-specified features, refactors, and test scaffolding.</td>
+          </tr>
+          <tr>
+            <td><strong>Autonomous agent</strong></td>
+            <td>Works in the background from a task description and returns a finished change.</td>
+            <td>Client &amp; auditor</td>
+            <td>Routine, low-risk, easily verified work. Used sparingly in this course.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The skill this course builds is not "prompting." It is choosing the right mode
+         for the task in front of you, and supplying what each mode needs from you:
+         clear specification going in, and rigorous review coming out. The further right
+         you move in that table, the less code you type — and the more your judgment
+         matters.</p>
+
+      <h2 id="vibe">2. What vibe coding actually costs</h2>
+      <p><em>Vibe coding</em> means prompting a model to generate software you don't
+         read or understand, judging it only by whether it appears to run. It's a fine
+         way to make a throwaway demo. It's a terrible way to build anything you must
+         stand behind, for three reasons you'll see repeatedly this semester:</p>
+      <ul>
+        <li><strong>You can't debug what you can't read.</strong> The first nontrivial
+            failure leaves you with a codebase that is, to you, someone else's — except
+            there's no one to ask.</li>
+        <li><strong>Generated code carries real defect and security rates.</strong>
+            Industry reviews in 2026 still find security flaws in a large fraction of
+            AI-generated code, which is why professional teams require human review
+            before merging. Module 06 covers the specific failure modes — including
+            <em>package hallucination</em>, where a model confidently imports a
+            dependency that doesn't exist, a vulnerability class documented by UTSA
+            researchers.</li>
+        <li><strong>It shortchanges the only thing you're here to build.</strong>
+            The degree certifies your judgment, not your typing. An interviewer, a
+            teammate, and eventually an incident review will all ask the same question:
+            <em>why is this code the way it is?</em></li>
+      </ul>
+
+      <h2 id="stance">3. The course stance: you own every line</h2>
+      <p>In CS 3443 you are encouraged to use AI tools, in any of the three modes, on
+         your project work. One rule governs all of it:</p>
+      <blockquote>If you submit it, you own it. You should be able to explain what any
+        line does, why it's there, and what would break if it changed.</blockquote>
+      <p>"The AI wrote that part" is not an explanation a professional gets to give,
+         and it isn't one here either. In practice the stance means three habits, which
+         Modules 04 and 05 turn into concrete technique:</p>
+      <ol>
+        <li><strong>Read before you accept.</strong> Generated code enters your project
+            through review, never through reflexive approval.</li>
+        <li><strong>Verify before you merge.</strong> Behavior is demonstrated by tests
+            you understand, not by "it ran once."</li>
+        <li><strong>Disclose your process.</strong> Each project submission includes a
+            short AI-use note: which tools, which mode, for what, and what you changed
+            after review. Honest disclosure is never penalized; it's the professional
+            norm you're practicing.</li>
+      </ol>
+
+      <div class="callout warn">
+        <span class="label">Academic integrity</span>
+        <p>The disclosure note is part of the assignment. Submitting AI-generated work
+           without disclosure, or being unable to explain your own submission, is
+           treated under the university's academic integrity policy. When unsure
+           whether a use is allowed, ask — before the deadline, not after.</p>
+      </div>
+
+      <h2 id="exercise">4. Hands-on exercise (~10 min)</h2>
+      <p>Pick any AI tool you already have access to (a chat model is fine — no setup
+         required for this one; playbooks come into play in Module 03).</p>
+      <ol>
+        <li>Ask it to generate a small, complete program: a Java class that parses a
+            CSV file of students and returns the top three by GPA, with ties broken
+            alphabetically.</li>
+        <li>Without running it, read the result and write down: one thing it did well,
+            one thing you'd change, and one question you can't answer about it.</li>
+        <li>Now run it on an edge case the spec implies but doesn't state — an empty
+            file, or two students tied on both GPA and name. Note what happens.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your three written observations and the edge-case result. The Q&amp;A session
+           opens with a comparison: same prompt, different tools, different failures —
+           and what that tells us about where the human fits.</p>
+      </div>
+
+      <h2 id="reading">5. Going deeper</h2>
+      <ul>
+        <li>Spracklen et&nbsp;al., <em>"We Have a Package for You! A Comprehensive
+            Analysis of Package Hallucinations by Code Generating LLMs"</em> — the UTSA
+            study you'll revisit in Module 06.</li>
+        <li>Your tool's own documentation on review and permissions settings — every
+            major agent ships one; finding it is part of Module 08's evaluation habit.</li>
+        <li>This site's <a href="playbooks.html">tool playbooks</a> — skim the decision
+            guide now; you'll choose a tool for your team project in Module 03.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="index.html#modules">← All modules</a>
+        <a href="module-2.html">Module 02: Specification Before Generation →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#modes">Three working modes</a></li>
+        <li><a href="#vibe">What vibe coding costs</a></li>
+        <li><a href="#stance">You own every line</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

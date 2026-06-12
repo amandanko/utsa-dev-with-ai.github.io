@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 03 · Working with an Agent — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 03</p>
+    <h1>Working with an Agent</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~25 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Configure an agent with the course safety settings — approvals on, auto-run off — and use version control as your undo button.</li>
+          <li>Scope a task to agent size: specified, bounded, and verifiable, producing one reviewable diff.</li>
+          <li>Assemble the context an agent needs — and recognize that it knows nothing you didn't put in front of it.</li>
+          <li>Run the delegate → watch → review → iterate loop, and name the four signals that mean it's time to take the wheel.</li>
+        </ul>
+        <p style="margin-top:10px;"><strong>Before you start:</strong> this module is
+           hands-on. Pick a tool from the <a href="playbooks.html">playbooks</a> and
+           complete its setup section first (~10 minutes, not counted above).</p>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 3 overview with live agent session, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 03 overview — includes a narrated live agent session</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="shift">1. From chat to agent: what actually changes</h2>
+      <p>A chat model gives you text; you decide what to do with it. An agent
+         <em>acts</em>: it reads your files, edits them, runs your build, executes
+         tests, and iterates on failures — in your project, with real consequences.
+         That changes your job description. In chat you were the author copying
+         answers; with an agent you are a <strong>director and reviewer</strong>,
+         and the quality of your direction (Module 02's spec) and your review
+         (Modules 04–05) are now the entire value you add.</p>
+      <p>It also changes the failure stakes. A bad chat answer wastes your time. A
+         badly supervised agent can overwrite working code, install a dependency you
+         didn't sanction, or "fix" a test by deleting it. None of these are reasons
+         to avoid agents; all of them are reasons the next section exists.</p>
+
+      <h2 id="setup">2. Set up for safety first</h2>
+      <p>Two non-negotiable course rules, whatever tool you choose:</p>
+      <ol>
+        <li><strong>Approvals on, auto-run off.</strong> The agent proposes; you
+            approve each file edit and each command, at least until Module 05's
+            verification habits are solid. Every playbook's setup section shows where
+            this switch lives. An agent that can run anything without asking is the
+            autonomous mode from Module 01 — earn it before you use it.</li>
+        <li><strong>Commit before you delegate.</strong> Version control is your undo
+            button. Start every agent session from a clean commit, so the agent's
+            entire contribution is one inspectable diff — and one
+            <code>git reset</code> away from gone. If you're about to delegate and
+            <code>git status</code> isn't clean, stop.</li>
+      </ol>
+      <div class="callout warn">
+        <span class="label">Sharp edge</span>
+        <p>Agents are eager. Given a vague task and broad permissions, a typical agent
+           will touch more files than you expected and call it initiative. The
+           guardrails above don't slow you down; they make the agent's eagerness
+           reviewable instead of dangerous.</p>
+      </div>
+
+      <h2 id="scoping">3. Scoping: what makes a good agent task</h2>
+      <p>The unit of delegation is not "the feature." It's <strong>one reviewable
+         diff</strong> — a change small enough that you can read all of it, understand
+         all of it, and check it against acceptance criteria in one sitting. Three
+         tests for a well-scoped task:</p>
+      <ul>
+        <li><strong>Specified:</strong> it has the five-part spec from Module 02, or
+            it's small enough that the spec fits in two sentences without ambiguity.</li>
+        <li><strong>Bounded:</strong> you can name the files it should touch — and
+            you say so, which gives your review a tripwire: any file outside the list
+            needs a justification.</li>
+        <li><strong>Verifiable:</strong> you know, before delegating, how you'll check
+            the result. If you can't say what done looks like, the agent can't either.</li>
+      </ul>
+      <p>Big features get decomposed first. The StudyBuddy search feature from
+         Module 02 is one diff. "Build the whole StudyBuddy app" is not a task; it's
+         a semester. Decomposition — slicing a feature into ordered, individually
+         verifiable steps — is itself design work you can co-do with the agent:
+         ask it to propose a plan, then edit the plan before any code happens.
+         Approving a plan is cheaper than rejecting a diff.</p>
+
+      <h2 id="context">4. Context: the agent knows only what's in front of it</h2>
+      <p>An agent reading your repository is not the same as an agent understanding
+         your project. It doesn't know your team's conventions, your professor's
+         requirements, or the architectural decision you made last week in a Discord
+         thread. Feed it deliberately:</p>
+      <ul>
+        <li><strong>The spec</strong> — verbatim, not paraphrased from memory.</li>
+        <li><strong>Pointers, not dumps</strong> — name the two or three files that
+            matter ("the list view is <code>GroupListView.java</code>") rather than
+            pasting the whole project. Modern agents can search your repo; directing
+            their attention is faster and cheaper than flooding it.</li>
+        <li><strong>A conventions file</strong> — most agents read a project-notes
+            file from your repo root (each playbook names the current convention).
+            Your team writes it once: language version, architecture, build and test
+            commands, style rules, things never to touch. This file is your team's
+            standing spec, and keeping it current is a graded part of the project.</li>
+      </ul>
+      <p>A useful mental model: every session, you're onboarding a skilled contractor
+         with no memory of yesterday. What would they need to read first? That's
+         your context.</p>
+
+      <h2 id="loop">5. The loop — and when to take the wheel</h2>
+      <p>The working rhythm is the same in every tool:
+         <strong>delegate → watch → review → iterate.</strong> Delegate one scoped
+         task. Watch the plan and the commands — approving is reading, not clicking.
+         Review the diff against your acceptance criteria (Module 04 makes this
+         rigorous). Then iterate: feedback to the agent is spec refinement, specific
+         and observable, not "that's wrong, try again."</p>
+      <p>And know the exits. Four signals that the supervised loop has stopped
+         working and you should take the wheel — fix it yourself, or reset and
+         re-scope:</p>
+      <ol>
+        <li><strong>Thrashing.</strong> The same error "fixed" three times, each fix
+            creating the next error. The agent is guessing; more iterations buy more
+            guesses.</li>
+        <li><strong>Scope drift.</strong> Files outside your named boundary are
+            changing, or the diff keeps growing past what you can review.</li>
+        <li><strong>Confident nonsense.</strong> It cites an API or method you can't
+            find in the docs, or a package you can't find in the registry — the
+            hallucination pattern Module 06 examines in depth. Verify; never assume
+            your ignorance.</li>
+        <li><strong>Goal corruption.</strong> The acceptance criterion was "tests
+            pass" and the agent is editing the tests. The letter of the spec is
+            beating its spirit; stop and restate what done means.</li>
+      </ol>
+      <p>Taking the wheel isn't failure — it's the judgment this course certifies.
+         The professional skill is noticing in two minutes, not twenty.</p>
+
+      <h2 id="choose">6. Choose your team's tool (this week)</h2>
+      <p>Your team commits to a primary tool for the project this week. Use the
+         <a href="playbooks.html">decision guide playbook</a>; weigh access and cost
+         on student plans, which modes it supports, how good its review surface is
+         (can you see every diff and command easily?), and whether it reads images —
+         which your Module 02 sketches will reward. Disagreement inside the team is
+         fine; the conventions file and the review workflow are what you must share.</p>
+
+      <h2 id="exercise">7. Hands-on exercise (~20 min)</h2>
+      <p>Use your chosen tool on the course sample project (or your team repo if
+         it's set up).</p>
+      <ol>
+        <li>Confirm the safety settings from your tool's playbook, and commit so
+            <code>git status</code> is clean.</li>
+        <li>Write a two-line conventions file if the project doesn't have one
+            (build command, test command, "don't modify the data layer").</li>
+        <li>Delegate your Module 02 spec — the one you already wrote. Ask for a plan
+            first; edit the plan if it touches files outside your boundary.</li>
+        <li>Watch the run. Approve deliberately. Note every moment you intervened —
+            or realize in hindsight that you should have.</li>
+        <li>Review the final diff against your acceptance criteria. Record: diff size
+            in lines, files touched vs. files you named, criteria met, and one thing
+            the agent did that you didn't ask for.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your run notes and the diff. The studio session collects the room's
+           "moment I should have taken the wheel" stories and maps them onto the four
+           signals — by the end, you'll have seen a dozen failure shapes you haven't
+           personally hit yet.</p>
+      </div>
+
+      <h2 id="reading">8. Going deeper</h2>
+      <ul>
+        <li>Your tool's <a href="playbooks.html">playbook</a>, sections 4–5 — the
+            review workflow and the current sharp edges your classmates have logged.</li>
+        <li>Your tool's official docs on permissions and project-notes conventions —
+            names change quarterly; the concepts here don't.</li>
+        <li>Module 04 preview: the diff you just produced is the reading material.
+            Don't merge it yet.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-2.html">← Module 02: Specification Before Generation</a>
+        <a href="module-4.html">Module 04: Reading Code You Didn&#39;t Write →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#shift">From chat to agent</a></li>
+        <li><a href="#setup">Set up for safety</a></li>
+        <li><a href="#scoping">Scoping a task</a></li>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#loop">The loop &amp; the exits</a></li>
+        <li><a href="#choose">Choose your tool</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

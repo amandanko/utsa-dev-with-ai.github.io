@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook · Claude Code — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules">Modules</a>
+      <a href="playbooks.html" aria-current="page">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="playbooks.html">Tool Playbooks</a> / Claude Code</p>
+    <h1>Getting started with an agentic CLI: Claude Code</h1>
+    <div class="meta-row">
+      <span class="chip chip-verified">Verified · Jun 2026</span>
+      <span class="stat">TERMINAL-NATIVE AGENT · ANTHROPIC</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout warn">
+        <span class="label">Shelf-life warning</span>
+        <p>This is tool-layer content. Commands, settings names, and prices below
+           were checked against the official docs on the verified-by date and drift
+           quickly. When something doesn't match what you see, trust your screen,
+           check <a href="https://docs.claude.com/en/docs/claude-code/overview">the
+           official docs</a>, and open a PR — Module 08 shows you how.</p>
+      </div>
+
+      <h2 id="what">1. What it is &amp; which mode</h2>
+      <p>Claude Code is Anthropic's coding agent. Its native home is the terminal —
+         you run <code>claude</code> inside a project directory and converse there —
+         with optional VS Code and JetBrains extensions that render its diffs in
+         your IDE, and a desktop app if you'd rather avoid the terminal entirely.</p>
+      <p>In Module 01's taxonomy it is a <strong>supervised agent</strong> as this
+         course configures it: it plans multi-step tasks, edits files, and runs
+         build and test commands, asking your approval at each consequential step.
+         It is <em>capable</em> of running far more autonomously; those modes stay
+         off in this course (see the settings below), and that's a feature — the
+         skills you're practicing are direction and review.</p>
+
+      <h2 id="setup">2. Setup for this course</h2>
+      <p><strong>Access first.</strong> Claude Code requires a paid plan (Claude
+         Pro or above) or pay-per-token API billing — there is no free tier as of
+         the verified-by date. <em>Check the course syllabus or ask your instructor
+         before paying for anything:</em> course-provided access, education
+         programs, and pricing all change frequently, and your team only needs the
+         tool on the machines that will run delegation sessions.</p>
+      <p><strong>Install.</strong> The native installer is the recommended method
+         (no Node.js required; auto-updates itself):</p>
+      <ul>
+        <li>macOS / Linux / WSL: <code>curl -fsSL https://claude.ai/install.sh | bash</code></li>
+        <li>Windows PowerShell: <code>irm https://claude.ai/install.ps1 | iex</code></li>
+      </ul>
+      <p>Open a fresh terminal, confirm with <code>claude --version</code>, then run
+         <code>claude</code> once from any directory — the first launch opens your
+         browser to sign in.</p>
+      <p><strong>Course-required safety settings.</strong> Good news: the defaults
+         are the course rules. Out of the box, Claude Code asks before every file
+         edit and every shell command. Your job is to not loosen that yet:</p>
+      <ul>
+        <li>Run <code>/permissions</code> inside a session to see the current
+            rules and which settings file each comes from. Rules evaluate in
+            <strong>deny → ask → allow</strong> order and live in
+            <code>.claude/settings.json</code> (project, committed — so your team
+            shares one configuration) or <code>settings.local.json</code>
+            (personal, gitignored).</li>
+        <li>It's fine to <em>allow</em> read-only and verification commands your
+            team runs constantly — <code>git status</code>, <code>git diff</code>,
+            <code>mvn test</code>. Keep edits, installs, <code>git push</code>,
+            and anything destructive on <em>ask</em>.</li>
+        <li><strong>Never use <code>--dangerously-skip-permissions</code> in this
+            course.</strong> The flag name is honest. An agent that can run
+            anything without asking is Module 01's autonomous mode plus Module
+            06's prompt-injection surface, on your machine, with your files.</li>
+      </ul>
+
+      <h2 id="first">3. Your first task</h2>
+      <p>Work in the course sample project (Module 03's exercise):</p>
+      <ol>
+        <li><code>cd studybuddy</code> and confirm <code>git status</code> is
+            clean — the Module 03 rule doesn't care which tool you're holding.</li>
+        <li>Create the conventions file Claude Code reads automatically: a
+            <code>CLAUDE.md</code> at the repo root. Ours can be two lines — an
+            import of the project notes, plus the commands:
+            <br><code>@PROJECT_NOTES.md</code>
+            <br><code>Build: mvn javafx:run · Tests: mvn test</code></li>
+        <li>Start <code>claude</code>, then ask for a plan before any code —
+            paste your Module 02 spec and add: <em>"Propose a plan first; don't
+            edit anything yet. I expect changes only in GroupListView.java."</em></li>
+        <li>Read the plan like it's a diff (it is one, in the future tense). Edit
+            it if it strays outside your boundary, then approve the steps one at
+            a time.</li>
+      </ol>
+
+      <h2 id="review">4. Review workflow</h2>
+      <ul>
+        <li><strong>During the run:</strong> every proposed file edit appears as a
+            diff in an approval prompt — approving is reading. Every shell command
+            shows before it runs. Press <code>Esc</code> at any moment to
+            interrupt; the agent stops and waits.</li>
+        <li><strong>Checkpoints:</strong> Claude Code snapshots the code before
+            each of its edits. Double-tap <code>Esc</code> or use
+            <code>/rewind</code> to step back, restoring the code, the
+            conversation, or both. Know the limit: checkpoints cover
+            <em>Claude's edits only</em> — not your edits, and not the effects of
+            shell commands. Git remains the real undo button, which is why you
+            committed clean in step 1.</li>
+        <li><strong>After the run:</strong> <code>git diff</code> is your one
+            reviewable diff for the Module 04 three-pass review. The session
+            transcript scrolls back through every command that ran — your
+            evidence for checklist item 1 (files touched) and the security pass.</li>
+        <li><strong>IDE option:</strong> the VS Code extension shows the same
+            diffs in the editor's native diff viewer and adds a per-message
+            rewind button — same workflow, friendlier rendering.</li>
+      </ul>
+
+      <h2 id="edges">5. Known sharp edges</h2>
+      <ul>
+        <li><strong>Cost and usage limits.</strong> Paid plans meter usage in
+            time-windowed limits; a long thrashing session can hit them
+            mid-task. The course workflow is the mitigation: small scoped tasks,
+            and Module 07's two-attempt ladder before any marathon.</li>
+        <li><strong>Eagerness.</strong> Given a vague task it will plan
+            generously — more files, more "improvements." Plan-first prompting
+            and a named file boundary (step 3 above) keep it honest. It may also
+            offer to add frequently-approved commands to your allow list;
+            review those suggestions like any diff.</li>
+        <li><strong>Long sessions compact themselves.</strong> Very long
+            conversations get summarized in place to fit context, and details
+            (including your careful spec) can blur. One task per session; start
+            fresh rather than continuing a marathon — your spec and CLAUDE.md
+            are the durable memory, not the chat scroll.</li>
+        <li><strong>CLAUDE.md is advice, not law.</strong> Instructions in
+            CLAUDE.md shape what the agent <em>tries</em> to do; only permission
+            rules change what it's <em>allowed</em> to do. Conventions go in
+            CLAUDE.md; protections go in <code>.claude/settings.json</code>.</li>
+        <li><em>[Student-observed edges accumulate here each semester — PR yours
+            in with a date.]</em></li>
+      </ul>
+
+      <h2 id="verified">6. Verified by</h2>
+      <p class="mono" style="font-size:14px;">
+        VERIFIED: June 2026 · against official docs at docs.claude.com ·
+        Claude Code version: [instructor: fill at semester start] ·
+        by: [course staff] · corrections: open a PR
+      </p>
+
+      <nav class="pager" aria-label="Page navigation">
+        <a href="playbooks.html">← All playbooks</a>
+        <a href="index.html#modules">Modules →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#what">What it is &amp; mode</a></li>
+        <li><a href="#setup">Setup for this course</a></li>
+        <li><a href="#first">Your first task</a></li>
+        <li><a href="#review">Review workflow</a></li>
+        <li><a href="#edges">Known sharp edges</a></li>
+        <li><a href="#verified">Verified by</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Instructors — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html" aria-current="page">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html">Home</a> / For Instructors</p>
+    <h1>Instructor Guide</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">FLIPPED DELIVERY · STUDIO Q&amp;A · OER ADOPTION</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+    <article class="prose">
+
+      <h2 id="model">The delivery model</h2>
+      <p>Students complete each module asynchronously — video, reading, and a short
+         hands-on exercise — before a scheduled in-class session. Class time is not a
+         lecture on the module; it is a <strong>studio Q&amp;A</strong> grounded in
+         what students bring: their exercise results, their project code, and the
+         specific places an AI tool helped or misled them. The asynchronous layer
+         scales beyond any one section; the studio layer is where your expertise
+         does work no recording can.</p>
+      <p>A typical pairing for a 15-week semester runs modules 01–03 in the first
+         month (before teams commit to a tool), 04–06 across the mid-semester project
+         build, and 07–08 in the final month as features expand. One studio session
+         per module is enough; many instructors fold it into existing lab time.</p>
+
+      <h2 id="studio">Running a studio session (50 min)</h2>
+      <ol>
+        <li><strong>Open with artifacts (10 min).</strong> Two or three volunteers show
+            their exercise output. Same prompt, different tools, different failures —
+            the comparison is the lesson.</li>
+        <li><strong>Cluster the questions (10 min).</strong> Collect questions submitted
+            with the exercise (a pre-class form works well) and group them live.
+            Patterns across the room beat one-on-one answers.</li>
+        <li><strong>Work one real problem (20 min).</strong> Take a student's actual
+            project issue and work it at the front of the room, narrating your own
+            judgment: what you'd delegate, what you'd verify, when you'd take the
+            wheel. Modeling expert judgment is the highest-value thing in the hour.</li>
+        <li><strong>Close on the stance (10 min).</strong> Return to "you own every
+            line": what would each student need to do before this code earns a merge?</li>
+      </ol>
+
+      <h2 id="misconceptions">Misconceptions to expect</h2>
+      <ul>
+        <li><strong>"The tool is the skill."</strong> Students arrive equating fluency
+            with one product to competence. The mode taxonomy in Module 01 is the
+            counter; reinforce it by naming modes, not products, in feedback.</li>
+        <li><strong>"It ran, so it works."</strong> The single most common gap.
+            Modules 04–05 exist to replace "it ran once" with review and tests; grade
+            the disclosure note and tests, not just the demo.</li>
+        <li><strong>"Disclosure means I'll be penalized."</strong> Say explicitly, and
+            early, that honest AI-use notes are never graded down. Otherwise students
+            hide usage and you lose the teaching surface entirely.</li>
+        <li><strong>"More autonomy is more advanced."</strong> Strong students often
+            over-delegate. The professional skill is matching autonomy to risk and
+            verifiability — push back on autonomous-mode use for code they can't yet
+            review.</li>
+      </ul>
+
+      <h2 id="maintenance">Maintaining the tool layer</h2>
+      <p>Concept modules should need only annual review. Playbooks rot in months by
+         design — and the maintenance plan is the curriculum: Module 08's exercise has
+         students evaluate a tool and draft or update a playbook, the best of which are
+         merged by pull request each semester with the student credited. Budget one
+         hour per semester per playbook for instructor verification; if a playbook
+         can't be verified, mark it stale rather than deleting it. A stale chip is
+         itself a lesson.</p>
+
+      <h2 id="adopt">Adopting this at your institution</h2>
+      <p>Everything here is open: concept modules under CC&nbsp;BY&nbsp;4.0, site and
+         exercise code under MIT. Fork the repository, replace the course banner and
+         the integrity-policy callout with your institution's language, and keep or
+         swap the playbooks for the tools your students can access. We ask only for
+         attribution — and we'd love an issue telling us you're using it, plus any
+         survey results you're willing to share for the ongoing SIGCSE work.</p>
+
+      <div class="callout">
+        <span class="label">Contact</span>
+        <p>Questions, adoption notes, or collaboration on the evaluation study:
+           [PI contact — Department of Computer Science, UT San Antonio].</p>
+      </div>
+
+      <nav class="pager" aria-label="Page navigation">
+        <a href="playbooks.html">← Tool Playbooks</a>
+        <a href="module-1.html">Module 01 →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#model">The delivery model</a></li>
+        <li><a href="#studio">Running a studio session</a></li>
+        <li><a href="#misconceptions">Misconceptions</a></li>
+        <li><a href="#maintenance">Maintaining the tool layer</a></li>
+        <li><a href="#adopt">Adopting this</a></li>
+      </ol>
+    </aside>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

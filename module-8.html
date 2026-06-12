@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 08 · Keeping Up — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 08</p>
+    <h1>Keeping Up</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~20 MIN · VIDEO + READING + CAPSTONE EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Run the 30-minute evaluation protocol on a tool you've never seen — using artifacts you already own as the benchmark.</li>
+          <li>Read a tool announcement critically: separate a new capability from a renamed one, and treat benchmark numbers as claims awaiting evidence.</li>
+          <li>Author a playbook in the six-section template and contribute it by pull request.</li>
+          <li>Describe a sustainable staying-current practice — a cadence, not a firehose.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 8 overview with a live 30-minute evaluation, compressed, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 08 overview — a never-before-seen tool, evaluated live</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="halflife">1. The half-life problem — and this site's answer to it</h2>
+      <p>Time to say the quiet part out loud. Every tool playbook on this site
+         carries a verified date because we expect it to be wrong within months —
+         renamed features, changed pricing, a whole product rebranded over a
+         weekend. That's not sloppiness in the tool layer; it's the truth about
+         the territory. Meanwhile, nothing in Modules 01–07 has a date on it,
+         because specification, review, verification, security posture, and
+         debugging discipline don't expire when a vendor ships.</p>
+      <p>You've been living inside this architecture all semester. Now it's yours
+         to carry: between this course and your graduation, the tool landscape
+         will turn over more than once, and it will keep turning for your entire
+         career. The professionals who handle that well aren't the ones who chase
+         every release — they're the ones who can <strong>evaluate anything new,
+         quickly, against standards they already hold</strong>. This module makes
+         that a procedure.</p>
+
+      <h2 id="changes">2. What changes, what doesn't</h2>
+      <table class="simple">
+        <thead>
+          <tr><th>Changes constantly</th><th>Hasn't changed all semester</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Product names, pricing, plans</td><td>A spec decides; silence delegates the decision</td></tr>
+          <tr><td>UIs, settings locations, file conventions</td><td>One reviewable diff; approve by reading</td></tr>
+          <tr><td>Context sizes, model versions, benchmark scores</td><td>Tests are the contract; red before green</td></tr>
+          <tr><td>Autonomy levels and agent "modes"</td><td>Every dependency gets the ritual</td></tr>
+          <tr><td>Which tool is "best" this quarter</td><td>Explanations are claims, not evidence</td></tr>
+        </tbody>
+      </table>
+      <p>Two habits for reading the announcement firehose with that table in mind:</p>
+      <ul>
+        <li><strong>The renaming trap.</strong> Marketing reintroduces existing
+            capabilities under new names constantly. Before treating a feature as
+            new, map it onto Module 01's three modes: is this a genuinely new
+            working relationship, or a supervised agent with a fresh coat of
+            paint? Most announcements are the second. The ones that are the
+            first — a real shift in what you can delegate or how you verify it —
+            are the ones worth thirty minutes.</li>
+        <li><strong>Benchmarks are claims.</strong> A leaderboard score is a
+            vendor-selected measurement of performance on someone else's tasks.
+            It's not meaningless — but the claims-not-evidence rule makes its
+            final appearance here: the only benchmark that settles whether a tool
+            helps <em>you</em> is the tool running <em>your</em> task. Which is
+            exactly what the protocol below does.</li>
+      </ul>
+
+      <h2 id="protocol">3. The 30-minute evaluation protocol</h2>
+      <p>Here's the quiet payoff of the semester: you already own a personal
+         benchmark suite. A spec you know intimately (Module 02's), acceptance
+         criteria with tests (Module 05's), and a twelve-item review checklist.
+         Evaluating a new tool means running the tool through <em>them</em>:</p>
+      <ol>
+        <li><strong>Before installing (5 min).</strong> Who makes it, what does it
+            cost on a student/free tier, and — first question always — what is its
+            permissions model? If the docs can't tell you how to require approvals
+            and disable auto-run, the evaluation is over and the verdict is no.</li>
+        <li><strong>Setup with safety on (5 min).</strong> Install, find the
+            approval controls, point it at a scratch clone of the sample project.
+            Clean <code>git status</code> before anything else — the Module 03
+            rules don't pause for novelty.</li>
+        <li><strong>The standard task (10 min).</strong> Give it your known spec,
+            verbatim — the same one every tool you've used got. Because you know
+            this task cold, every difference you observe is signal about the
+            tool, not noise about the task. Watch how it plans, what it asks,
+            what it touches.</li>
+        <li><strong>Review the diff (5 min).</strong> Twelve items, same as
+            always. Run your existing tests against its output. A tool whose
+            output fails your suite has measured itself.</li>
+        <li><strong>One deliberate probe (5 min).</strong> Give it something
+            slightly vague and watch the failure shape: does it ask a clarifying
+            question, state its assumptions, or silently sprawl across files it
+            wasn't given? How a tool behaves at the edge of its instructions
+            tells you more than how it behaves in the center.</li>
+      </ol>
+      <p>Then write the verdict in one honest paragraph: what mode it really is,
+         what it did better or worse than your current tool, the sharpest edge
+         you hit, and whether it earns a place in your kit. Thirty minutes,
+         repeatable forever, and notice what it actually is: a tiny version of
+         the methodology in the UTSA package-hallucination paper — a fixed
+         procedure, run across tools, with the differences recorded. Evaluation
+         is just research at personal scale.</p>
+
+      <h2 id="playbook">4. Write it down: the playbook</h2>
+      <p>An evaluation that lives in your head dies there. The six-section
+         <a href="playbooks.html#template">playbook template</a> is the protocol's
+         output format: what it is and which mode, setup for this course, a first
+         task, the review workflow, known sharp edges, and a verified-by line with
+         your name on it. Drafting one takes about as long as the evaluation did,
+         and it's this module's exercise — the strongest drafts are merged into
+         this site by pull request each semester, credited, where they'll onboard
+         students you'll never meet until someone re-runs the protocol and
+         replaces them. That's not a side effect of how this site stays alive.
+         It's the entire mechanism.</p>
+
+      <h2 id="practice">5. A practice, not a firehose</h2>
+      <p>Finally, calibrate the ongoing effort, because "keeping up" fails in two
+         directions: ignoring the field until your skills strand, or drowning in
+         release notes at the cost of actually building things. The sustainable
+         middle is a cadence:</p>
+      <ul>
+        <li><strong>Re-evaluate quarterly, not weekly.</strong> Run the protocol
+            when something claims a new <em>mode</em> — a different working
+            relationship — not a new version number. A few times a year is
+            plenty; the protocol makes each one cheap.</li>
+        <li><strong>Pick one or two high-signal sources</strong> — an official
+            changelog, one practitioner whose evaluations you've learned to
+            trust — over ten feeds of launch-day enthusiasm. Skepticism is
+            cheaper at the source.</li>
+        <li><strong>Keep the conventions file alive.</strong> On any team you
+            join, that file (or its equivalent) is where tool judgment compounds.
+            The intern who updates it thoughtfully is doing senior work.</li>
+      </ul>
+
+      <h2 id="exercise">6. Capstone exercise (~45 min)</h2>
+      <ol>
+        <li>Pick a tool you have <em>never</em> used from the instructor's
+            candidate list (kept current each semester — tools with student-
+            accessible tiers, including at least one this site has no playbook
+            for).</li>
+        <li>Run the full protocol, keeping notes at each step. Time-box honestly;
+            running over budget is itself a finding about the tool's onboarding.</li>
+        <li>Draft a playbook in the six-section template — or, if the site
+            already covers your tool, a dated update PR correcting what's drifted
+            since its verified-by line.</li>
+        <li>End with the one-paragraph verdict, including the sentence: "Compared
+            to my team's current tool, I would / would not switch, because…"</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your verdict and your draft. The final studio session is lightning
+           rounds — two minutes per tool — and then the room compares verdicts
+           where two people evaluated the same tool. When trained evaluators
+           disagree, the discussion about <em>why</em> is the last and best
+           lesson of the semester. Strong drafts get merged, with credit, before
+           finals.</p>
+      </div>
+
+      <h2 id="reading">7. Where this leaves you</h2>
+      <p>A closing inventory, because you've earned one. You can turn an idea
+         into a spec that decides things; delegate it as one reviewable diff to
+         an agent you've configured to be safe; read what comes back in three
+         passes and explain every line; hold it to tests that can fail; refuse a
+         dependency that can't prove it exists; debug without thrashing when it
+         breaks at 11 p.m.; and — as of this module — do all of it again with
+         whatever tool exists the year you're reading this. Take the checklist,
+         the protocol, and the habit of writing things down into your internship.
+         The tools in this site's playbooks will be museum pieces before you're a
+         senior engineer. What you do with them won't.</p>
+      <ul>
+        <li>Re-read the Spracklen et&nbsp;al. methodology section with new eyes —
+            you've now run the personal-scale version of it.</li>
+        <li>Star the course repository. When a playbook you wrote goes stale and
+            a future student's PR replaces it, you'll get the notification — and
+            that's the system working.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-7.html">← Module 07: Troubleshooting &amp; Debugging with AI</a>
+        <a href="index.html#modules">All modules →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#halflife">The half-life problem</a></li>
+        <li><a href="#changes">What changes, what doesn't</a></li>
+        <li><a href="#protocol">The 30-minute protocol</a></li>
+        <li><a href="#playbook">Write the playbook</a></li>
+        <li><a href="#practice">A practice, not a firehose</a></li>
+        <li><a href="#exercise">Capstone exercise</a></li>
+        <li><a href="#reading">Where this leaves you</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

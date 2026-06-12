@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 04 · Reading Code You Didn't Write — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 04</p>
+    <h1>Reading Code You Didn't Write</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~25 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Review a generated diff with the three-pass method: intent, structure, then line-level.</li>
+          <li>Spot the smells characteristic of generated code — silent defaults, speculative generality, plausible-but-wrong APIs, ignored project conventions.</li>
+          <li>Verify what you read: check unfamiliar APIs against documentation and treat "I can't explain this line" as an action item, not a shrug.</li>
+          <li>Make and record a merge decision — accept, request changes, or reject — with review notes that feed your AI-use disclosure.</li>
+        </ul>
+        <p style="margin-top:10px;"><strong>Before you start:</strong> have your
+           unmerged diff from Module 03 open. It's this module's reading material.</p>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 4 overview with a narrated live review of a generated diff, about 8 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 04 overview — a narrated live review of a generated diff</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~8 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="why">1. Reading is the job now</h2>
+      <p>In the pre-agent world, you read a little code and wrote a lot. That ratio
+         has inverted. When an agent produces most of the lines, the engineering
+         happens in the reading — which is why professional teams still put a human
+         review between generated code and the main branch, and why senior engineers
+         describe review as where they now spend their time. Review is also the only
+         mechanism that makes Module 01's stance real: <em>you own every line</em> is
+         an empty slogan unless there's a moment where you actually read every line
+         and decide it earns a merge.</p>
+      <p>One reframe before the technique: reviewing generated code is not
+         proofreading. Proofreading assumes the author understood what they meant and
+         checks the surface. Your author is a system that produces plausible code
+         without understanding your project — so plausibility is exactly the thing
+         you cannot trust. You're not checking spelling; you're checking <em>truth</em>.</p>
+
+      <h2 id="passes">2. The three-pass method</h2>
+      <p>Reading a diff line-by-line from the top is how reviews fail — you drown in
+         detail before you've asked whether the change is even the right shape. Read
+         in three passes, coarse to fine, and stop the moment a pass fails:</p>
+
+      <h3>Pass 1 — Intent (2 minutes): is this the change I asked for?</h3>
+      <ul>
+        <li>Files touched vs. files you named in Module 03's boundary. Anything
+            outside the list needs a justification before you read further.</li>
+        <li>Diff size vs. task size. A 40-line task that came back as 400 lines is a
+            scope question, not a reading assignment.</li>
+        <li>Skim only the shape: new classes, new dependencies, deleted code. A new
+            dependency you didn't sanction fails Pass 1 on the spot.</li>
+      </ul>
+
+      <h3>Pass 2 — Structure (5 minutes): does it belong in this project?</h3>
+      <ul>
+        <li>Does it follow your architecture and your conventions file — or did it
+            import a pattern from someone else's codebase?</li>
+        <li>Did it reuse your existing helpers, or quietly reimplement them? Agents
+            duplicate what they don't notice.</li>
+        <li>Are names, error handling, and style consistent with the surrounding
+            code? Inconsistency here predicts inconsistency you can't see.</li>
+      </ul>
+
+      <h3>Pass 3 — Lines (the real work): is it true?</h3>
+      <ul>
+        <li>Trace the main path by hand against an acceptance criterion: pick a
+            concrete input from your spec and walk it through the code on paper.</li>
+        <li>Trace one unhappy path: the empty list, the null field, the zero-match
+            query. Generated code is weakest exactly where your spec was silent.</li>
+        <li>Interrogate every line you can't explain. That's not a vague ideal —
+            it's the checklist item below.</li>
+      </ul>
+
+      <div class="callout">
+        <span class="label">The generated-code review checklist</span>
+        <ol>
+          <li>Every touched file was in scope, or has a justification I accept.</li>
+          <li>No new dependencies I didn't sanction. <em>(Module 06 raises the stakes on this one.)</em></li>
+          <li>Existing project helpers were reused, not reimplemented.</li>
+          <li>Every unfamiliar API call was checked against real documentation.</li>
+          <li>I traced one happy path and one unhappy path by hand.</li>
+          <li>No swallowed exceptions, silent fallbacks, or magic default values I didn't choose.</li>
+          <li>No deleted or weakened tests, and no dead code along for the ride.</li>
+          <li>There is no line I cannot explain to a teammate.</li>
+        </ol>
+        <p>Print it, or copy it into your pull-request template — that's where it
+           lives on professional teams.</p>
+      </div>
+
+      <h2 id="smells">3. Smells specific to generated code</h2>
+      <p>Generated code has its own characteristic failure smells, different from
+         the ones classic code-review guides catalog. Five to develop a nose for:</p>
+      <ul>
+        <li><strong>Silent defaults.</strong> A <code>catch</code> block that logs and
+            continues; a missing config value replaced by a guessed constant; a parse
+            failure that returns an empty list. The code never crashes — and never
+            tells you it's wrong. In a diff, every <code>catch</code>, every
+            <code>?:</code> fallback, and every default parameter deserves a pause:
+            <em>who chose this behavior?</em> If the answer isn't "my spec," it's a
+            finding.</li>
+        <li><strong>Speculative generality.</strong> An interface with one
+            implementation, a config option nobody asked for, a "manager" class
+            wrapping two method calls. It reads as professionalism; it's padding that
+            you will maintain. Your non-goals section is the measuring stick.</li>
+        <li><strong>Plausible-but-wrong API usage.</strong> A method that almost
+            exists, an overload with the arguments in a believable-but-incorrect
+            order, a deprecated call that worked in the model's training data. This
+            is why checklist item 4 says <em>real documentation</em> — not the
+            agent's word for it.</li>
+        <li><strong>Convention blindness.</strong> Correct code in the wrong dialect:
+            different naming, a second way of doing something your project already
+            does one way. Harmless once; over a semester it turns your codebase into
+            an anthology.</li>
+        <li><strong>Decorative comments.</strong> <code>// loop through the groups</code>
+            above a loop through the groups. Generated comments tend to restate the
+            code rather than explain the <em>why</em>. Delete them, and add the why
+            yourself where a future reader needs it — you're the only one who knows it.</li>
+      </ul>
+
+      <h2 id="verify">4. Reading with the agent — without taking its word</h2>
+      <p>You can and should use AI as a reading partner: ask it to summarize the
+         diff, explain a function, or walk a specific input through the code. This is
+         legitimately one of the best uses of these tools. One rule keeps it honest:
+         <strong>explanations are claims, not evidence.</strong> A model can
+         confabulate a fluent explanation of code that doesn't do what it says —
+         including code it just wrote. So use the explanation as a map, then check
+         the territory: run the input, read the doc, print the value. The hierarchy
+         is docs and execution first, model claims second, your assumptions last.</p>
+      <p>And when you hit a line you can't explain even with help — an unfamiliar
+         language feature, a clever stream pipeline, a regex — treat it as the
+         day's homework, not an obstacle. Five minutes spent understanding one such
+         line is the actual mechanism by which this course makes you a stronger
+         developer than the tool. Skipping that five minutes, every time, is how
+         vibe coding happens gradually to people who swore it wouldn't.</p>
+
+      <h2 id="decision">5. The merge decision</h2>
+      <p>Every review ends in one of three recorded outcomes:</p>
+      <ul>
+        <li><strong>Accept.</strong> Checklist clean; merge it — and the commit
+            message says what it does, not "AI changes."</li>
+        <li><strong>Request changes.</strong> Findings go back to the agent as
+            spec-grade feedback (Module 03's iterate step): specific, observable,
+            one issue at a time.</li>
+        <li><strong>Reject and take the wheel.</strong> When the findings say the
+            approach is wrong, not the details — reset to your pre-delegation commit
+            and either re-scope or write it yourself.</li>
+      </ul>
+      <p>Whatever the outcome, keep two lines of review notes: what you found, and
+         what you changed. Those notes are most of your AI-use disclosure for the
+         assignment, written for free, at the moment you actually know the answers.</p>
+
+      <h2 id="exercise">6. Hands-on exercise (~20 min)</h2>
+      <ol>
+        <li>Run the three passes on your unmerged Module 03 diff, checklist in hand.
+            Time-box Pass 1 to two minutes — the discipline is the point.</li>
+        <li>Record every finding, however small: at least one scope observation, one
+            smell (or an honest "looked for all five, found none"), and one line you
+            initially couldn't explain, with the explanation you tracked down.</li>
+        <li>Ask your tool to explain the trickiest function — then verify one
+            specific claim in its explanation against docs or by running it. Note
+            whether the claim held.</li>
+        <li>Make the call: accept, request changes, or reject. If it's accept,
+            merge with a real commit message. Write your two-line review note.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Your findings list and your merge decision. The studio session swaps
+           diffs: you review a classmate's diff cold, with no context — which is
+           exactly how their generated code looked to them, and the fastest way to
+           feel why Pass 1 exists.</p>
+      </div>
+
+      <h2 id="reading">7. Going deeper</h2>
+      <ul>
+        <li>Google's engineering-practices code review guide — the standard
+            reference for human-to-human review; notice what transfers to reviewing
+            an agent and what doesn't.</li>
+        <li>Your own merged diff in a week. Re-read it; whatever confuses
+            future-you was a finding current-you missed. Calibration is free.</li>
+        <li>Module 05 preview: hand-tracing doesn't scale. Next module turns your
+            acceptance criteria into tests so the checking runs itself.</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-3.html">← Module 03: Working with an Agent</a>
+        <a href="module-5.html">Module 05: Verification &amp; Testing →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#why">Reading is the job</a></li>
+        <li><a href="#passes">The three-pass method</a></li>
+        <li><a href="#smells">Generated-code smells</a></li>
+        <li><a href="#verify">Reading with the agent</a></li>
+        <li><a href="#decision">The merge decision</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

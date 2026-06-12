@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 02 · Specification Before Generation — Developing with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="mark">Developing <em>with</em> AI</span>
+      <span class="org">UT San Antonio · CS 3443</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Home</a>
+      <a href="index.html#modules" aria-current="page">Modules</a>
+      <a href="playbooks.html">Tool Playbooks</a>
+      <a href="instructors.html">For Instructors</a>
+    </nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html#modules">Modules</a> / 02</p>
+    <h1>Specification Before Generation</h1>
+    <div class="meta-row">
+      <span class="chip chip-durable">Durable</span>
+      <span class="stat">~20 MIN · VIDEO + READING + EXERCISE</span>
+    </div>
+  </div>
+</div>
+
+<div class="article">
+  <div class="wrap article-grid">
+
+    <article class="prose">
+
+      <div class="callout">
+        <span class="label">Learning objectives</span>
+        <p>By the end of this module you can:</p>
+        <ul>
+          <li>Explain why specification quality, not generation speed, is the bottleneck in AI-assisted development.</li>
+          <li>Write an executable spec using the five-part template: context, behavior, constraints, acceptance criteria, and non-goals.</li>
+          <li>Use a low-fidelity prototype as a specification, and run a design conversation with an AI tool <em>before</em> any code exists.</li>
+          <li>Recognize an underspecified request by the questions a careful developer would have to ask back.</li>
+        </ul>
+      </div>
+
+      <div class="video-slot" role="img" aria-label="Video placeholder: Module 2 overview, about 7 minutes">
+        <span class="play">▶</span>
+        <strong style="color:#fff;">Module 02 overview</strong>
+        <span class="mono" style="font-size:12px;">VIDEO · ~7 MIN · [RECORD SUMMER 2026]</span>
+      </div>
+
+      <h2 id="bottleneck">1. The bottleneck moved</h2>
+      <p>For most of computing history, the expensive part of software was typing it:
+         translating an idea into correct syntax, line by line. AI agents have made
+         that part cheap. What they have <em>not</em> made cheap is knowing what to
+         build. An agent will happily produce two hundred lines from a one-sentence
+         request — it just won't be the two hundred lines you needed, because the
+         missing decisions didn't disappear. The agent made them for you, silently,
+         and usually with the most generic possible answer.</p>
+      <p>This is why CS 3443 puts design before development, and why this module comes
+         before any tool playbook. A specification is where you make the decisions
+         that are yours to make. Everything you hand to an agent later — and everything
+         you'll review when it comes back — is downstream of it.</p>
+      <blockquote>A useful test: if two reasonable developers could read your request
+        and build meaningfully different things, it isn't a spec yet. It's a wish.</blockquote>
+
+      <h2 id="anatomy">2. Anatomy of an executable spec</h2>
+      <p>An <em>executable spec</em> is a description precise enough that a competent
+         developer — human or agent — could build from it without guessing on anything
+         that matters. Five parts, none optional:</p>
+
+      <table class="simple">
+        <thead>
+          <tr><th>Part</th><th>Answers</th><th>Common failure when missing</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Context</strong></td>
+            <td>What exists already? Language, framework, relevant classes, data shapes.</td>
+            <td>Code that ignores your architecture — a new pattern bolted onto your project.</td>
+          </tr>
+          <tr>
+            <td><strong>Behavior</strong></td>
+            <td>What happens, step by step, including the unhappy paths?</td>
+            <td>Edge cases decided by the model's defaults, not by you.</td>
+          </tr>
+          <tr>
+            <td><strong>Constraints</strong></td>
+            <td>What must stay true? Performance, dependencies allowed, style, APIs to use or avoid.</td>
+            <td>A surprise dependency, or a rewrite of code that wasn't supposed to change.</td>
+          </tr>
+          <tr>
+            <td><strong>Acceptance criteria</strong></td>
+            <td>What observable results prove it's done?</td>
+            <td>"It ran once" becomes the definition of done.</td>
+          </tr>
+          <tr>
+            <td><strong>Non-goals</strong></td>
+            <td>What are you deliberately not building yet?</td>
+            <td>Scope creep — agents love adding features you didn't ask for.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="example">A worked example</h3>
+      <p>Suppose your team project is <em>StudyBuddy</em>, a JavaFX app for forming
+         study groups. Compare two ways of requesting the same feature.</p>
+
+      <div class="callout warn">
+        <span class="label">A wish</span>
+        <p><code>Add a search feature so users can find study groups.</code></p>
+        <p>Unanswered: search on what fields? Partial matches? Case sensitivity? What
+           does the UI do with zero results? Does this filter the existing list view
+           or open a new screen? Can it touch the data layer? An agent will answer
+           all of these — its way.</p>
+      </div>
+
+      <div class="callout">
+        <span class="label">An executable spec</span>
+        <p><strong>Context:</strong> JavaFX app; groups live in
+           <code>GroupRepository.getAll()</code> returning <code>List&lt;StudyGroup&gt;</code>
+           (fields: name, courseCode, meetingDay); the main screen is
+           <code>GroupListView</code>, which renders that list.</p>
+        <p><strong>Behavior:</strong> Add a text field above the list. As the user
+           types, filter the visible list to groups whose name <em>or</em> courseCode
+           contains the query, case-insensitive. Empty query shows all groups. Zero
+           matches shows the message "No groups found — try a course code like CS 3443."</p>
+        <p><strong>Constraints:</strong> Filter in memory in the view layer; do not
+           modify <code>GroupRepository</code> or add dependencies. Follow our existing
+           MVC structure.</p>
+        <p><strong>Acceptance criteria:</strong> typing <code>cs 34</code> matches
+           "CS 3443"; typing <code>algo</code> matches a group named "Algorithms Anonymous";
+           clearing the field restores the full list; zero-match message appears and disappears correctly.</p>
+        <p><strong>Non-goals:</strong> no fuzzy matching, no search history, no filtering
+           by meetingDay (planned for sprint 3).</p>
+      </div>
+
+      <p>Notice what the spec really is: a record of decisions. Writing it took ten
+         minutes; every one of those ten minutes was design work that someone had to
+         do. The only question is whether it's done deliberately by you, or silently
+         by a model.</p>
+
+      <h2 id="prototypes">3. Prototypes are specifications too</h2>
+      <p>For anything with a user interface, prose runs out of precision fast. A
+         low-fidelity prototype — a paper sketch, a wireframe, even a labeled ASCII
+         layout — is often the highest-bandwidth spec you can produce, and modern
+         tools accept images directly. Two practices to build now:</p>
+      <ul>
+        <li><strong>Sketch before you prompt.</strong> Draw the screen, label the
+            controls, number the interactions. Hand the sketch plus the five-part spec
+            to the tool. You'll spend less time correcting layout guesses than you
+            would have spent describing the layout in words.</li>
+        <li><strong>Use the tool as a design critic before using it as a builder.</strong>
+            Before requesting code, ask: <em>"Here is my spec and sketch. What's
+            ambiguous? What edge cases am I missing? Propose two alternative designs
+            and their trade-offs."</em> This is the co-design loop: the model is good
+            at generating alternatives, and you are responsible for choosing. Iterate
+            on the spec until the questions stop — then, and only then, generate.</li>
+      </ul>
+      <p>This sequencing — sketch, spec, critique, revise, generate — is the module's
+         core habit, and it's exactly the workflow you'll practice with a real agent
+         in Module 03.</p>
+
+      <h2 id="criteria">4. Acceptance criteria: write "done" down</h2>
+      <p>Acceptance criteria deserve special attention because they do double duty.
+         Going in, they force you to think in observable behavior ("typing
+         <code>cs 34</code> matches CS 3443") rather than vibes ("search works well").
+         Coming out, they are the checklist your review runs against — and in
+         Module 05 they become tests, often generated by the same agent and verified
+         by you. A criterion you can't imagine checking isn't a criterion; it's a hope.</p>
+      <p>Three quick quality checks for each criterion: it names a concrete input,
+         it names an observable result, and a teammate could verify it without asking
+         you anything.</p>
+
+      <h2 id="exercise">5. Hands-on exercise (~15 min)</h2>
+      <p>Use any chat-capable AI tool. You'll generate the same feature twice and
+         compare what specification buys you.</p>
+      <ol>
+        <li>Pick a small feature from your own project idea (or use StudyBuddy's
+            "sort groups by meeting day").</li>
+        <li><strong>Round 1 — the wish:</strong> request it in one sentence. Save the
+            generated code without correcting anything.</li>
+        <li><strong>Round 2 — the spec:</strong> write the five-part spec (10 minutes,
+            honestly spent), ask the tool what's ambiguous, patch the spec, then
+            request the code.</li>
+        <li>Diff the two results and write down: two decisions the model made for you
+            in Round 1, one question the tool raised in Round 2 that you hadn't
+            considered, and which output would be easier to review and test.</li>
+      </ol>
+      <div class="callout">
+        <span class="label">Bring to class</span>
+        <p>Both code outputs and your three written observations. The studio session
+           pairs you up to review each other's Round 2 specs against the five-part
+           template — the fastest way to learn what "ambiguous" looks like is to read
+           someone else's spec cold.</p>
+      </div>
+
+      <h2 id="reading">6. Going deeper</h2>
+      <ul>
+        <li>Joel Spolsky's classic essays on painless functional specs — written
+            decades before AI tools, and a sharper argument for this module than
+            anything published since.</li>
+        <li>Your team project's design document assignment — the five-part template
+            maps directly onto its feature sections; use it.</li>
+        <li>The <a href="playbooks.html">decision guide playbook</a> — you'll choose
+            your team's tool in Module 03, and your spec-writing habits should inform
+            the choice (some tools accept images and project context better than others).</li>
+      </ul>
+
+      <nav class="pager" aria-label="Module navigation">
+        <a href="module-1.html">← Module 01: The Landscape &amp; Your Stance</a>
+        <a href="module-3.html">Module 03: Working with an Agent →</a>
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="On this page">
+      <p class="label">On this page</p>
+      <ol>
+        <li><a href="#bottleneck">The bottleneck moved</a></li>
+        <li><a href="#anatomy">Anatomy of a spec</a></li>
+        <li><a href="#prototypes">Prototypes as specs</a></li>
+        <li><a href="#criteria">Acceptance criteria</a></li>
+        <li><a href="#exercise">Hands-on exercise</a></li>
+        <li><a href="#reading">Going deeper</a></li>
+      </ol>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff;">Developing with AI</strong>
+      <p class="fineprint">An open curriculum for AI-assisted software development.<br>
+      Department of Computer Science, The University of Texas at San Antonio.</p>
+    </div>
+    <div>
+      <p>Concept modules: CC BY 4.0 · Code &amp; site: MIT<br>
+      Supported by the Kay and Steve Robbins Faculty Teaching Fellowship.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
